@@ -101,14 +101,17 @@ const STORAGE = (() => {
   // Auto-recover from backup on init
   recoverFromBackup();
 
-  // Try to restore from server file after a short delay (server might not be ready yet)
+  // Try to restore from server file (takes priority)
   setTimeout(() => {
     restoreFromServer().then(count => {
       if (count > 0) {
         console.log(`🔄 Restored ${count} datasets from server backup`);
+        // Reload the page so all UI reflects the restored data
+        // Only reload if we actually had zero data before restore
+        window.location.reload();
       }
     });
-  }, 500);
+  }, 300);
 
   // ---------- Safe JSON helpers ----------
   function getData(key, fallback) {
