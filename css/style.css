@@ -1011,7 +1011,9 @@ mark.search-highlight {
   margin-right: 6px;
 }
 
-/* Fullscreen editor layout */
+/* ==========================================
+   EDITOR — Fullscreen (always)
+   ========================================== */
 .editor-fullscreen {
   position: fixed;
   top: 56px;
@@ -1022,60 +1024,72 @@ mark.search-highlight {
   background: var(--background);
   display: flex;
   flex-direction: column;
-  border: none;
-  border-radius: 0;
 }
-.editor-fullscreen .card-header {
+.editor-fullscreen .editor-toolbar {
   flex-shrink: 0;
-  border-radius: 0;
-  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px var(--gutter-x);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface);
 }
-.editor-fullscreen .card-body {
+.editor-fullscreen .editor-toolbar-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.editor-fullscreen .editor-toolbar-actions {
+  display: flex;
+  gap: 6px;
+}
+.editor-fullscreen .editor-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px var(--gutter-x);
+  padding: 6px var(--gutter-x) 8px;
   overflow: hidden;
   min-height: 0;
 }
-.editor-fullscreen .form-group {
-  margin-bottom: 0;
-}
-.editor-fullscreen .form-group label {
-  margin-bottom: 3px;
-  font-size: 0.65rem;
-}
-.editor-fullscreen .form-control {
-  padding: 6px 10px;
-  font-size: 0.82rem;
-}
-/* Title and tags in a compact horizontal row */
 .editor-fullscreen .editor-meta-row {
   display: flex;
   gap: 10px;
   flex-shrink: 0;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 .editor-fullscreen .editor-meta-row .form-group {
   flex: 1;
   min-width: 0;
+  margin-bottom: 0;
 }
-/* The content area takes all remaining space */
-.editor-fullscreen .form-group.editor-content-group {
+.editor-fullscreen .form-group label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.editor-fullscreen .form-group label .required { color: var(--accent); margin-left: 2px; }
+.editor-fullscreen .form-control {
+  padding: 5px 10px;
+  font-size: 0.82rem;
+}
+.editor-fullscreen .editor-content-group {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  margin-bottom: 0;
 }
-.editor-fullscreen .form-group.editor-content-group label {
+.editor-fullscreen .editor-content-group label {
   flex-shrink: 0;
 }
-.editor-fullscreen .form-group.editor-content-group .editor-split {
+.editor-fullscreen .editor-content-group .editor-split {
   flex: 1;
   min-height: 0;
   border-radius: var(--radius-sm);
 }
-/* Split panes need min-height:0 to shrink properly in Firefox/Safari */
 .editor-fullscreen .editor-split-pane {
   min-height: 0;
 }
@@ -1087,10 +1101,6 @@ mark.search-highlight {
 .editor-fullscreen .editor-preview-pane .preview-content {
   min-height: 0;
   flex: 1;
-}
-.editor-fullscreen .btn-group {
-  flex-shrink: 0;
-  padding-top: 6px;
 }
 .editor-fullscreen .editor-hint-row {
   flex-shrink: 0;
@@ -1107,11 +1117,11 @@ mark.search-highlight {
     gap: 4px;
     margin-bottom: 4px;
   }
-  .editor-fullscreen .form-group.editor-content-group .editor-split {
+  .editor-fullscreen .editor-content-group .editor-split {
     flex-direction: column;
   }
   .editor-fullscreen .editor-split-pane {
-    min-height: 40%;
+    min-height: 35%;
   }
 }
 

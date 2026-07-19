@@ -369,54 +369,48 @@ const KNOWLEDGE = (() => {
     const container = document.getElementById('dynamic-content');
 
     container.innerHTML = `
-      <div class="page-header" style="padding-bottom:0;">
-        <button class="btn btn-secondary btn-sm" onclick="KNOWLEDGE.renderList()">← 返回列表</button>
-      </div>
-      <div class="page-body" style="padding-top:8px;">
-        <div class="editor-container card editor-fullscreen">
-          <div class="card-header">
-            <span>${isEdit ? '✏️ 编辑笔记' : '✏️ 新建笔记'}</span>
-            <button class="btn-icon" onclick="KNOWLEDGE.toggleFullscreen()" title="切换全屏编辑" style="font-size:0.9rem;">⛶</button>
+      <div class="editor-container editor-fullscreen">
+        <div class="editor-toolbar">
+          <span class="editor-toolbar-title">${isEdit ? '✏️ 编辑笔记' : '✏️ 新建笔记'}</span>
+          <div class="editor-toolbar-actions">
+            <button class="btn btn-primary btn-sm" onclick="KNOWLEDGE.saveNote('${id || ''}')">💾 保存</button>
+            ${isEdit ? `<button class="btn btn-secondary btn-sm" onclick="KNOWLEDGE.showDetail('${id}')">取消</button>` : `<button class="btn btn-secondary btn-sm" onclick="KNOWLEDGE.renderList()">取消</button>`}
           </div>
-          <div class="card-body">
-            <div class="editor-meta-row">
-              <div class="form-group">
-                <label>标题 <span class="required">*</span></label>
-                <input type="text" class="form-control" id="note-title" placeholder="输入笔记标题..." value="${escapeHtml(titleVal)}">
+        </div>
+        <div class="editor-body">
+          <div class="editor-meta-row">
+            <div class="form-group">
+              <label>标题 <span class="required">*</span></label>
+              <input type="text" class="form-control" id="note-title" placeholder="输入笔记标题..." value="${escapeHtml(titleVal)}">
+            </div>
+            <div class="form-group">
+              <label>标签</label>
+              <input type="text" class="form-control" id="note-tags" placeholder="tech, life, study" value="${escapeHtml(tagsVal)}">
+            </div>
+          </div>
+          <div class="form-group editor-content-group">
+            <label>内容 (Markdown) <span class="required">*</span></label>
+            <div class="editor-split">
+              <div class="editor-split-pane editor-write-pane">
+                <div class="editor-split-label">
+                  编辑
+                  <span class="editor-preview-badge">LIVE</span>
+                </div>
+                <textarea class="form-control editor-textarea" id="note-content" placeholder="支持 Markdown 格式&#10;&#10;## 标题&#10;**粗体** *斜体*&#10;- 列表项&#10;1. 编号列表&#10;\`代码\`&#10;> 引用">${escapeHtml(contentVal)}</textarea>
               </div>
-              <div class="form-group">
-                <label>标签</label>
-                <input type="text" class="form-control" id="note-tags" placeholder="tech, life, study" value="${escapeHtml(tagsVal)}">
+              <div class="editor-split-pane editor-preview-pane">
+                <div class="editor-split-label">
+                  预览
+                  <span class="editor-preview-badge">实时</span>
+                </div>
+                <div class="preview-content" id="markdown-preview">
+                  <p style="color:var(--text-muted);">实时预览</p>
+                </div>
               </div>
             </div>
-            <div class="form-group editor-content-group">
-              <label>内容 (Markdown) <span class="required">*</span></label>
-              <div class="editor-split">
-                <div class="editor-split-pane editor-write-pane">
-                  <div class="editor-split-label">
-                    编辑
-                    <span class="editor-preview-badge">LIVE</span>
-                  </div>
-                  <textarea class="form-control editor-textarea" id="note-content" placeholder="支持 Markdown 格式&#10;&#10;## 标题&#10;**粗体** *斜体*&#10;- 列表项&#10;1. 编号列表&#10;\`代码\`&#10;> 引用">${escapeHtml(contentVal)}</textarea>
-                </div>
-                <div class="editor-split-pane editor-preview-pane">
-                  <div class="editor-split-label">
-                    预览
-                    <span class="editor-preview-badge">实时</span>
-                  </div>
-                  <div class="preview-content" id="markdown-preview">
-                    <p style="color:var(--text-muted);">实时预览</p>
-                  </div>
-                </div>
-              </div>
-              <div class="editor-hint-row form-hint" style="margin-top:3px;">
-                <span id="editor-word-count">0 字 · 阅读约 0 分钟</span>
-                <span id="editor-auto-save-status" style="margin-left:12px;font-size:0.72rem;color:var(--text-muted);"></span>
-              </div>
-            </div>
-            <div class="btn-group">
-              <button class="btn btn-primary btn-lg" onclick="KNOWLEDGE.saveNote('${id || ''}')">💾 保存</button>
-              ${isEdit ? `<button class="btn btn-secondary btn-lg" onclick="KNOWLEDGE.showDetail('${id}')">取消</button>` : `<button class="btn btn-secondary btn-lg" onclick="KNOWLEDGE.renderList()">取消</button>`}
+            <div class="editor-hint-row form-hint" style="margin-top:3px;">
+              <span id="editor-word-count">0 字 · 阅读约 0 分钟</span>
+              <span id="editor-auto-save-status" style="margin-left:12px;font-size:0.72rem;color:var(--text-muted);"></span>
             </div>
           </div>
         </div>
@@ -600,18 +594,6 @@ const KNOWLEDGE = (() => {
     renderList();
   }
 
-  // ---------- Toggle Fullscreen Editor ----------
-  let editorFullscreen = true;
-
-  function toggleFullscreen() {
-    const container = document.querySelector('.editor-container');
-    if (!container) return;
-    editorFullscreen = !editorFullscreen;
-    container.classList.toggle('editor-fullscreen', editorFullscreen);
-    // Force resize event so textarea fills properly
-    window.dispatchEvent(new Event('resize'));
-  }
-
   // ---------- Escape HTML ----------
   function escapeHtml(str) {
     if (typeof str !== 'string') return '';
@@ -634,7 +616,6 @@ const KNOWLEDGE = (() => {
     togglePinnedFirst,
     setViewMode,
     togglePin,
-    toggleFullscreen,
     exportSingleNote,
   };
 })();
