@@ -106,9 +106,12 @@ const STORAGE = (() => {
     restoreFromServer().then(count => {
       if (count > 0) {
         console.log(`🔄 Restored ${count} datasets from server backup`);
-        // Reload the page so all UI reflects the restored data
-        // Only reload if we actually had zero data before restore
-        window.location.reload();
+        // Re-render home page if currently on it
+        const currentPage = typeof APP !== 'undefined' && APP.getCurrentPage ?
+          APP.getCurrentPage() : null;
+        if (currentPage === 'home') {
+          APP.navigateTo('home');
+        }
       }
     });
   }, 300);
