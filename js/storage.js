@@ -58,8 +58,57 @@ const STORAGE = (() => {
     }
   }
 
+  // ---------- Server sync (file persistence — survives localStorage clears) ----------
+  let serverSyncTimer = null;
+
+  function scheduleServerSync() {
+    if (serverSyncTimer) clearTimeout(serverSyncTimer);
+    serverSyncTimer = setTimeout(syncAllToServer, 3000);
+  }
+
+  function syncAllToServer() {
+    try {
+      const data = {};
+      Object.values(KEYS).forEach(key => {
+        const val = localStorage.getItem(key);
+        if (val) data[key] = JSON.parse(val);
+      });
+      fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).catch(() => { /* server might not be available */ });
+    } catch (e) { /* silent */ }
+  }
+
+  function restoreFromServer() {
+    return fetch('/api/data')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => {
+        let restored = 0;
+        Object.entries(data).forEach(([key, val]) => {
+          const existing = localStorage.getItem(key);
+          if (!existing || JSON.parse(existing).length === 0) {
+            localStorage.setItem(key, JSON.stringify(val));
+            restored++;
+          }
+        });
+        return restored;
+      })
+      .catch(() => 0);
+  }
+
   // Auto-recover from backup on init
   recoverFromBackup();
+
+  // Try to restore from server file after a short delay (server might not be ready yet)
+  setTimeout(() => {
+    restoreFromServer().then(count => {
+      if (count > 0) {
+        console.log(`🔄 Restored ${count} datasets from server backup`);
+      }
+    });
+  }, 500);
 
   // ---------- Safe JSON helpers ----------
   function getData(key, fallback) {
@@ -76,6 +125,7 @@ const STORAGE = (() => {
     try {
       localStorage.setItem(key, JSON.stringify(data));
       scheduleBackup();
+      scheduleServerSync();
       return true;
     } catch (e) {
       console.error(`Storage write error [${key}]:`, e);
@@ -435,6 +485,8 @@ const STORAGE = (() => {
   return {
     // Backup / Recovery
     recoverFromBackup,
+    restoreFromServer,
+    syncAllToServer,
     // Notes
     getNotes,
     saveNotes,

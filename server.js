@@ -3,8 +3,6 @@
  * Aria Study - Local development server
  * Run: node server.js
  * Then open: http://localhost:3000
- *
- * Required: Safari's localStorage needs HTTP protocol to work properly.
  */
 
 const http = require('http');
@@ -13,6 +11,7 @@ const path = require('path');
 
 const PORT = 3000;
 const ROOT = __dirname;
+const DATA_FILE = path.join(require('os').homedir(), '.ariastudy-data.json');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -25,13 +24,64 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
-const server = http.createServer((req, res) => {
-  let url = req.url.split('?')[0];
-  if (url === '/') url = '/index.html';
+function readJSONBody(req) {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', (chunk) => (body += chunk));
+    req.on('end', () => {
+      try { resolve(JSON.parse(body)); }
+      catch { resolve(null); }
+    });
+  });
+}
 
-  const filePath = path.join(ROOT, url);
+const server = http.createServer(async (req, res) => {
+  const url = req.url.split('?')[0];
+  const method = req.method;
 
-  // Security: prevent directory traversal
+  // ---- API: save data ----
+  if (url === '/api/data' && method === 'POST') {
+    const data = await readJSONBody(req);
+    if (!data) {
+      res.writeHead(400);
+      res.end('Bad request');
+      return;
+    }
+    try {
+      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
+    } catch (e) {
+      res.writeHead(500);
+      res.end('Write failed');
+    }
+    return;
+  }
+
+  // ---- API: load data ----
+  if (url === '/api/data' && method === 'GET') {
+    try {
+      if (fs.existsSync(DATA_FILE)) {
+        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(raw);
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({}));
+      }
+    } catch (e) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({}));
+    }
+    return;
+  }
+
+  // ---- Static file server ----
+  let fileUrl = url;
+  if (fileUrl === '/') fileUrl = '/index.html';
+
+  const filePath = path.join(ROOT, fileUrl);
+
   if (!filePath.startsWith(ROOT)) {
     res.writeHead(403);
     res.end('Forbidden');
@@ -58,12 +108,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`
-╔══════════════════════════════════╗
-║        Aria Study Server         ║
-╠══════════════════════════════════╣
-║  Open: http://localhost:${PORT}  ║
-║  Press Ctrl+C to stop           ║
-╚══════════════════════════════════╝
-  `);
+  console.log(`Aria Study server running on http://127.0.0.1:${PORT}`);
 });

@@ -203,13 +203,22 @@ const APP = (() => {
   }
 
   function recoverData() {
+    // Try local backup first
     const restored = STORAGE.recoverFromBackup();
     if (restored) {
-      showToast('✅ 数据已从备份恢复！');
+      showToast('✅ 数据已从本地备份恢复！');
       navigateTo('home');
-    } else {
-      showToast('没有找到可恢复的备份', 'error');
+      return;
     }
+    // Try server-side backup
+    STORAGE.restoreFromServer().then(count => {
+      if (count > 0) {
+        showToast(`✅ 已从服务器恢复 ${count} 项数据！`);
+        navigateTo('home');
+      } else {
+        showToast('没有找到可恢复的数据', 'error');
+      }
+    });
   }
 
   // ---------- Public API ----------
