@@ -883,10 +883,6 @@ mark.search-highlight {
   overflow: hidden;
   min-height: 360px;
 }
-.editor-fullscreen .editor-split {
-  min-height: 0;
-  flex: 1;
-}
 .editor-split-pane {
   flex: 1;
   min-width: 0;
@@ -930,10 +926,6 @@ mark.search-highlight {
   line-height: 1.7;
   resize: vertical;
 }
-.editor-fullscreen .editor-textarea {
-  min-height: 0;
-  resize: none;
-}
 .editor-textarea:focus {
   box-shadow: none !important;
 }
@@ -945,9 +937,6 @@ mark.search-highlight {
   font-size: 0.92rem;
   color: var(--text-secondary);
   min-height: 320px;
-}
-.editor-fullscreen .editor-preview-pane .preview-content {
-  min-height: 0;
 }
 .editor-preview-pane .preview-content h1,
 .editor-preview-pane .preview-content h2,
@@ -1039,53 +1028,90 @@ mark.search-highlight {
 .editor-fullscreen .card-header {
   flex-shrink: 0;
   border-radius: 0;
+  padding: 10px 20px;
 }
 .editor-fullscreen .card-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 12px var(--gutter-x);
+  padding: 8px var(--gutter-x);
   overflow: hidden;
+  min-height: 0;
 }
-.editor-fullscreen .form-group:not(:has(textarea)) {
-  margin-bottom: 10px;
+.editor-fullscreen .form-group {
+  margin-bottom: 0;
 }
-.editor-fullscreen .form-group:has(textarea) {
+.editor-fullscreen .form-group label {
+  margin-bottom: 3px;
+  font-size: 0.65rem;
+}
+.editor-fullscreen .form-control {
+  padding: 6px 10px;
+  font-size: 0.82rem;
+}
+/* Title and tags in a compact horizontal row */
+.editor-fullscreen .editor-meta-row {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-bottom: 6px;
+}
+.editor-fullscreen .editor-meta-row .form-group {
+  flex: 1;
+  min-width: 0;
+}
+/* The content area takes all remaining space */
+.editor-fullscreen .form-group.editor-content-group {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-bottom: 0;
   min-height: 0;
 }
-.editor-fullscreen .form-group:has(textarea) .editor-split {
+.editor-fullscreen .form-group.editor-content-group label {
+  flex-shrink: 0;
+}
+.editor-fullscreen .form-group.editor-content-group .editor-split {
   flex: 1;
   min-height: 0;
+  border-radius: var(--radius-sm);
+}
+/* Split panes need min-height:0 to shrink properly in Firefox/Safari */
+.editor-fullscreen .editor-split-pane {
+  min-height: 0;
+}
+.editor-fullscreen .editor-textarea {
+  min-height: 0;
+  resize: none;
+  flex: 1;
+}
+.editor-fullscreen .editor-preview-pane .preview-content {
+  min-height: 0;
+  flex: 1;
 }
 .editor-fullscreen .btn-group {
   flex-shrink: 0;
-  padding-top: 10px;
+  padding-top: 6px;
+}
+.editor-fullscreen .editor-hint-row {
+  flex-shrink: 0;
 }
 
-/* Mobile: stack vertically in fullscreen */
+/* Mobile fullscreen */
 @media (max-width: 768px) {
   .editor-fullscreen {
     top: 56px;
     bottom: 56px;
   }
-  .editor-fullscreen .card-body {
-    padding: 8px var(--gutter-x);
+  .editor-fullscreen .editor-meta-row {
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 4px;
   }
-  .editor-fullscreen .form-group:has(textarea) .editor-split {
+  .editor-fullscreen .form-group.editor-content-group .editor-split {
     flex-direction: column;
   }
   .editor-fullscreen .editor-split-pane {
     min-height: 40%;
-  }
-  .editor-fullscreen .editor-textarea {
-    min-height: 0;
-  }
-  .editor-fullscreen .editor-preview-pane .preview-content {
-    min-height: 0;
   }
 }
 

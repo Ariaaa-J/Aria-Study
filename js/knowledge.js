@@ -379,17 +379,18 @@ const KNOWLEDGE = (() => {
             <button class="btn-icon" onclick="KNOWLEDGE.toggleFullscreen()" title="切换全屏编辑" style="font-size:0.9rem;">⛶</button>
           </div>
           <div class="card-body">
-            <div class="form-group">
-              <label>标题 <span class="required">*</span></label>
-              <input type="text" class="form-control" id="note-title" placeholder="输入笔记标题..." value="${escapeHtml(titleVal)}">
+            <div class="editor-meta-row">
+              <div class="form-group">
+                <label>标题 <span class="required">*</span></label>
+                <input type="text" class="form-control" id="note-title" placeholder="输入笔记标题..." value="${escapeHtml(titleVal)}">
+              </div>
+              <div class="form-group">
+                <label>标签</label>
+                <input type="text" class="form-control" id="note-tags" placeholder="tech, life, study" value="${escapeHtml(tagsVal)}">
+              </div>
             </div>
-            <div class="form-group">
-              <label>标签</label>
-              <input type="text" class="form-control" id="note-tags" placeholder="用逗号分隔，如: tech, life, study" value="${escapeHtml(tagsVal)}">
-              <div class="form-hint">常用标签: tech, life, study, work, idea, english</div>
-            </div>
-            <div class="form-group">
-              <label>内容 (支持 Markdown) <span class="required">*</span></label>
+            <div class="form-group editor-content-group">
+              <label>内容 (Markdown) <span class="required">*</span></label>
               <div class="editor-split">
                 <div class="editor-split-pane editor-write-pane">
                   <div class="editor-split-label">
@@ -408,7 +409,7 @@ const KNOWLEDGE = (() => {
                   </div>
                 </div>
               </div>
-              <div class="form-hint" style="margin-top:4px;">
+              <div class="editor-hint-row form-hint" style="margin-top:3px;">
                 <span id="editor-word-count">0 字 · 阅读约 0 分钟</span>
                 <span id="editor-auto-save-status" style="margin-left:12px;font-size:0.72rem;color:var(--text-muted);"></span>
               </div>
