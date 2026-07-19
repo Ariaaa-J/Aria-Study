@@ -9,7 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = 3456;
 const ROOT = __dirname;
 const DATA_FILE = path.join(require('os').homedir(), '.ariastudy-data.json');
 
@@ -108,5 +108,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Aria Study server running on http://127.0.0.1:${PORT}`);
+  console.log(`Aria Study server running on port ${PORT}`);
 });
