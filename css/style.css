@@ -846,31 +846,7 @@ mark.search-highlight {
 /* ==========================================
    EDITOR
    ========================================== */
-.editor-container { max-width: 760px; }
-.editor-container.editor-fullscreen { max-width: 100%; }
-.editor-container .editor-tabs { display: flex; border-bottom: 1px solid var(--border); }
-.editor-container .editor-tab {
-  padding: 9px 18px;
-  font-size: clamp(11px, 0.733vw, 12px);
-  font-weight: 500;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  color: var(--text-muted);
-  transition: all var(--transition);
-  background: none;
-  font-family: var(--font);
-  border-top: none;
-  border-left: none;
-  border-right: none;
-}
-.editor-container .editor-tab:hover { color: var(--text-primary); }
-.editor-container .editor-tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
-.editor-container .editor-pane { display: none; padding: 14px 0; }
-.editor-container .editor-pane.active { display: block; }
-.editor-container .preview-content { min-height: 200px; padding: 6px 0; line-height: 1.8; }
+/* old .editor-container rules removed — fullscreen uses .editor-fullscreen only */
 
 /* ==========================================
    EDITOR — Split Pane with Live Preview
@@ -1024,6 +1000,9 @@ mark.search-highlight {
   background: var(--background);
   display: flex;
   flex-direction: column;
+  width: 100%;
+  border: none;
+  border-radius: 0;
 }
 .editor-fullscreen .editor-toolbar {
   flex-shrink: 0;
