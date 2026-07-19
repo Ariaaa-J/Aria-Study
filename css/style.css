@@ -990,6 +990,14 @@ mark.search-highlight {
 /* ==========================================
    EDITOR — Fullscreen (always)
    ========================================== */
+#fullscreen-editor-root:empty {
+  display: none;
+}
+#fullscreen-editor-root:not(:empty) {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
 .editor-fullscreen {
   position: fixed;
   top: 56px;

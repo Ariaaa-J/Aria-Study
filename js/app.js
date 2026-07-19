@@ -36,6 +36,10 @@ const APP = (() => {
   //  NAVIGATION
   // ==========================================
   function navigateTo(page) {
+    // Close fullscreen editor if open
+    const editorRoot = document.getElementById('fullscreen-editor-root');
+    if (editorRoot) editorRoot.innerHTML = '';
+
     if (page === currentPage && page !== 'home') return;
     if (isTransitioning && page !== currentPage) return;
     currentPage = page;

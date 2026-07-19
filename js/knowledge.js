@@ -84,8 +84,15 @@ const KNOWLEDGE = (() => {
     },
   };
 
+  // ---------- Close fullscreen editor ----------
+  function closeEditor() {
+    const root = document.getElementById('fullscreen-editor-root');
+    if (root) root.innerHTML = '';
+  }
+
   // ---------- Render List ----------
   function renderList() {
+    closeEditor();
     const container = document.getElementById('dynamic-content');
     let notes = STORAGE.getNotesWithSort(currentSort, pinnedFirst);
 
@@ -259,6 +266,7 @@ const KNOWLEDGE = (() => {
 
   // ---------- Templates Picker ----------
   function showTemplates() {
+    closeEditor();
     const container = document.getElementById('dynamic-content');
     container.innerHTML = `
       <div class="page-header" style="padding-bottom:0;">
@@ -289,6 +297,7 @@ const KNOWLEDGE = (() => {
 
   // ---------- Render Detail ----------
   function showDetail(id) {
+    closeEditor();
     const note = STORAGE.getNote(id);
     if (!note) {
       showToast('笔记未找到', 'error');
@@ -366,10 +375,11 @@ const KNOWLEDGE = (() => {
       tagsVal = tpl.tags.join(', ');
     }
 
-    const container = document.getElementById('dynamic-content');
+    // Render into fullscreen-editor-root (outside main-content to avoid position:fixed conflicts)
+    const root = document.getElementById('fullscreen-editor-root');
 
-    container.innerHTML = `
-      <div class="editor-container editor-fullscreen">
+    root.innerHTML = `
+      <div class="editor-fullscreen">
         <div class="editor-toolbar">
           <span class="editor-toolbar-title">${isEdit ? '✏️ 编辑笔记' : '✏️ 新建笔记'}</span>
           <div class="editor-toolbar-actions">
