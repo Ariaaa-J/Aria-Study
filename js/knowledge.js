@@ -372,10 +372,11 @@ const KNOWLEDGE = (() => {
       <div class="page-header" style="padding-bottom:0;">
         <button class="btn btn-secondary btn-sm" onclick="KNOWLEDGE.renderList()">← 返回列表</button>
       </div>
-      <div class="page-body">
-        <div class="editor-container card">
+      <div class="page-body" style="padding-top:8px;">
+        <div class="editor-container card editor-fullscreen">
           <div class="card-header">
             <span>${isEdit ? '✏️ 编辑笔记' : '✏️ 新建笔记'}</span>
+            <button class="btn-icon" onclick="KNOWLEDGE.toggleFullscreen()" title="切换全屏编辑" style="font-size:0.9rem;">⛶</button>
           </div>
           <div class="card-body">
             <div class="form-group">
@@ -598,6 +599,18 @@ const KNOWLEDGE = (() => {
     renderList();
   }
 
+  // ---------- Toggle Fullscreen Editor ----------
+  let editorFullscreen = true;
+
+  function toggleFullscreen() {
+    const container = document.querySelector('.editor-container');
+    if (!container) return;
+    editorFullscreen = !editorFullscreen;
+    container.classList.toggle('editor-fullscreen', editorFullscreen);
+    // Force resize event so textarea fills properly
+    window.dispatchEvent(new Event('resize'));
+  }
+
   // ---------- Escape HTML ----------
   function escapeHtml(str) {
     if (typeof str !== 'string') return '';
@@ -620,6 +633,7 @@ const KNOWLEDGE = (() => {
     togglePinnedFirst,
     setViewMode,
     togglePin,
+    toggleFullscreen,
     exportSingleNote,
   };
 })();

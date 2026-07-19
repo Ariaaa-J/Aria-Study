@@ -847,6 +847,7 @@ mark.search-highlight {
    EDITOR
    ========================================== */
 .editor-container { max-width: 760px; }
+.editor-container.editor-fullscreen { max-width: 100%; }
 .editor-container .editor-tabs { display: flex; border-bottom: 1px solid var(--border); }
 .editor-container .editor-tab {
   padding: 9px 18px;
@@ -881,6 +882,10 @@ mark.search-highlight {
   border-radius: var(--radius);
   overflow: hidden;
   min-height: 360px;
+}
+.editor-fullscreen .editor-split {
+  min-height: 0;
+  flex: 1;
 }
 .editor-split-pane {
   flex: 1;
@@ -925,6 +930,10 @@ mark.search-highlight {
   line-height: 1.7;
   resize: vertical;
 }
+.editor-fullscreen .editor-textarea {
+  min-height: 0;
+  resize: none;
+}
 .editor-textarea:focus {
   box-shadow: none !important;
 }
@@ -936,6 +945,9 @@ mark.search-highlight {
   font-size: 0.92rem;
   color: var(--text-secondary);
   min-height: 320px;
+}
+.editor-fullscreen .editor-preview-pane .preview-content {
+  min-height: 0;
 }
 .editor-preview-pane .preview-content h1,
 .editor-preview-pane .preview-content h2,
@@ -1008,6 +1020,73 @@ mark.search-highlight {
 }
 .editor-preview-pane .preview-content input[type="checkbox"] {
   margin-right: 6px;
+}
+
+/* Fullscreen editor layout */
+.editor-fullscreen {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 64px;
+  z-index: 50;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 0;
+}
+.editor-fullscreen .card-header {
+  flex-shrink: 0;
+  border-radius: 0;
+}
+.editor-fullscreen .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px var(--gutter-x);
+  overflow: hidden;
+}
+.editor-fullscreen .form-group:not(:has(textarea)) {
+  margin-bottom: 10px;
+}
+.editor-fullscreen .form-group:has(textarea) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  min-height: 0;
+}
+.editor-fullscreen .form-group:has(textarea) .editor-split {
+  flex: 1;
+  min-height: 0;
+}
+.editor-fullscreen .btn-group {
+  flex-shrink: 0;
+  padding-top: 10px;
+}
+
+/* Mobile: stack vertically in fullscreen */
+@media (max-width: 768px) {
+  .editor-fullscreen {
+    top: 56px;
+    bottom: 56px;
+  }
+  .editor-fullscreen .card-body {
+    padding: 8px var(--gutter-x);
+  }
+  .editor-fullscreen .form-group:has(textarea) .editor-split {
+    flex-direction: column;
+  }
+  .editor-fullscreen .editor-split-pane {
+    min-height: 40%;
+  }
+  .editor-fullscreen .editor-textarea {
+    min-height: 0;
+  }
+  .editor-fullscreen .editor-preview-pane .preview-content {
+    min-height: 0;
+  }
 }
 
 /* Mobile: stack vertically */
