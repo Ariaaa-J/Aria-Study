@@ -1,5 +1,6 @@
 /* ============================================
    Storage Layer - localStorage Wrapper
+   With auto file backup for crash recovery
    ============================================ */
 
 const STORAGE = (() => {
@@ -12,6 +13,53 @@ const STORAGE = (() => {
     PINNED: 'personal_app_pinned_notes',
     SPEAKING: 'personal_app_speaking',
   };
+
+  // ---------- File backup ----------
+  const BACKUP_KEY = 'as_backup';
+  let backupTimer = null;
+
+  function scheduleBackup() {
+    if (backupTimer) clearTimeout(backupTimer);
+    backupTimer = setTimeout(saveBackupToFile, 2000);
+  }
+
+  function saveBackupToFile() {
+    try {
+      const data = {};
+      Object.values(KEYS).forEach(key => {
+        const val = localStorage.getItem(key);
+        if (val) data[key] = JSON.parse(val);
+      });
+      // Also store in localStorage itself as a backup
+      localStorage.setItem(BACKUP_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('Backup save failed:', e);
+    }
+  }
+
+  function recoverFromBackup() {
+    try {
+      const raw = localStorage.getItem(BACKUP_KEY);
+      if (!raw) return false;
+
+      const data = JSON.parse(raw);
+      let restored = 0;
+      Object.entries(data).forEach(([key, val]) => {
+        const existing = localStorage.getItem(key);
+        if (!existing || JSON.parse(existing).length === 0) {
+          localStorage.setItem(key, JSON.stringify(val));
+          restored++;
+        }
+      });
+      return restored > 0;
+    } catch (e) {
+      console.warn('Backup recovery failed:', e);
+      return false;
+    }
+  }
+
+  // Auto-recover from backup on init
+  recoverFromBackup();
 
   // ---------- Safe JSON helpers ----------
   function getData(key, fallback) {
@@ -27,6 +75,7 @@ const STORAGE = (() => {
   function setData(key, data) {
     try {
       localStorage.setItem(key, JSON.stringify(data));
+      scheduleBackup();
       return true;
     } catch (e) {
       console.error(`Storage write error [${key}]:`, e);
@@ -384,6 +433,8 @@ const STORAGE = (() => {
 
   // ---------- Public API ----------
   return {
+    // Backup / Recovery
+    recoverFromBackup,
     // Notes
     getNotes,
     saveNotes,

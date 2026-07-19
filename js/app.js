@@ -112,6 +112,11 @@ const APP = (() => {
         <div class="home-title">Aria Study</div>
         <p class="home-subtitle">Knowledge · English · Growth</p>
 
+        <!-- Recovery banner - only shown when backup data is available -->
+        <div id="recovery-banner" style="display:none;width:100%;max-width:520px;margin:0 auto 16px;padding:12px 18px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--accent-light);text-align:center;font-size:0.85rem;">
+          💾 检测到备份数据，<a href="#" onclick="APP.recoverData();return false;" style="color:var(--accent);font-weight:600;text-decoration:underline;">点击恢复</a>
+        </div>
+
         <div class="home-stats">
           <div class="home-stat-card">
             <div class="home-stat-value">${stats.totalWords}</div>
@@ -168,6 +173,9 @@ const APP = (() => {
     container.style.opacity = '1';
     container.style.transform = 'translateY(0)';
     container.style.transition = '';
+
+    // Check for backup recovery
+    setTimeout(checkBackup, 100);
   }
 
   // ---------- Badge Updates ----------
@@ -175,11 +183,38 @@ const APP = (() => {
     // Reserved for future badge updates
   }
 
+  // ---------- Recovery ----------
+  function checkBackup() {
+    // Called after home renders to check if backup is available
+    try {
+      const raw = localStorage.getItem('as_backup');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      const notes = STORAGE.getNotes();
+      if (notes.length === 0 && data.personal_app_notes && data.personal_app_notes.length > 0) {
+        const banner = document.getElementById('recovery-banner');
+        if (banner) banner.style.display = 'block';
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  function recoverData() {
+    const restored = STORAGE.recoverFromBackup();
+    if (restored) {
+      showToast('✅ 数据已从备份恢复！');
+      navigateTo('home');
+    } else {
+      showToast('没有找到可恢复的备份', 'error');
+    }
+  }
+
   // ---------- Public API ----------
   return {
     init,
     navigateTo,
     updateBadges,
+    recoverData,
+    checkBackup,
     getCurrentPage: () => currentPage,
   };
 })();
