@@ -15,3 +15,7 @@ __pycache__/
 .vscode/
 *.swp
 *.swo
+
+# macOS native app build output
+native-app/Aria\ Study.app/
+native-app/*.o
