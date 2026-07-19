@@ -1,21 +1,20 @@
 #!/bin/bash
-# Build Aria Study macOS App
-# Run this from native-app/ directory
+# Build Aria Study macOS App (pure Swift, no Node)
 
 APP_DIR="$HOME/Desktop/Aria Study.app"
 SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "🔨 Compiling launcher..."
-mkdir -p "$APP_DIR/Contents/MacOS"
-mkdir -p "$APP_DIR/Contents/Resources"
+echo "🔨 Compiling..."
+mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources"
 
-cc -o "$APP_DIR/Contents/MacOS/AriaStudy" "$SRC_DIR/launcher.c" -Wall -O2
-if [ $? -ne 0 ]; then
-  echo "❌ Compilation failed"
-  exit 1
-fi
+swiftc -o "$APP_DIR/Contents/MacOS/AriaStudy" \
+  -target arm64-apple-macos11.0 \
+  "$SRC_DIR/main.swift" \
+  -framework WebKit -framework Cocoa 2>&1
 
-# Copy icon
+if [ $? -ne 0 ]; then echo "❌ Failed"; exit 1; fi
+
+# Icon
 cp "$SRC_DIR/AppIcon.icns" "$APP_DIR/Contents/Resources/AppIcon.icns" 2>/dev/null
 
 # Info.plist
@@ -35,21 +34,23 @@ cat > "$APP_DIR/Contents/Info.plist" << 'PLIST'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>2.0</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>2</string>
     <key>LSMinimumSystemVersion</key>
-    <string>10.13</string>
+    <string>11.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
 </dict>
 </plist>
 PLIST
 
-chmod +x "$APP_DIR/Contents/MacOS/AriaStudy"
 codesign --force --deep --sign - "$APP_DIR" 2>/dev/null
-
-echo "✅ Build complete!"
-echo "📦 $APP_DIR"
+echo "✅ Build complete! → $APP_DIR"
